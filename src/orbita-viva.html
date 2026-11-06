@@ -285,6 +285,24 @@ body.compact #ctxBtn{min-height:42px;font-size:14px;padding:0 18px}
 body.compact .ctx button.ext{min-height:42px;font-size:13px}
 body.compact .joyhint{width:130px;font-size:11px}
 body.compact .speed{font-size:11.5px}
+.hangarbox{width:min(980px,100%);max-height:100%;overflow:auto;margin:auto;background:var(--glass-hi);border:1px solid var(--line);border-radius:18px;padding:18px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.hangarbox h2{margin:0}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.hcard{display:flex;flex-direction:column;gap:7px;border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(238,242,250,.03)}
+.hcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.hthumb{height:104px;border-radius:10px;background:radial-gradient(circle at 50% 60%,rgba(127,160,255,.18),rgba(6,10,23,.6));display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hthumb img{width:100%;height:100%;object-fit:contain}
+.hhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hhead b{font-size:17px}
+.hstats{display:grid;gap:3px}
+.hst{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--dim)}
+.pips{display:flex;gap:3px}
+.pips i{width:14px;height:5px;border-radius:3px;background:rgba(238,242,250,.15)}
+.pips i.on{background:var(--accent)}
+.hfact{font-size:11.5px}
+.hplan{margin:0;font-size:10.5px;color:var(--dim);font-family:var(--f-data)}
+.hcard .btn{margin-top:auto}
+body.compact .hthumb{height:84px}
 .res .goal{display:grid;grid-template-columns:1fr;gap:4px;font-family:var(--f-data);font-size:10px;color:var(--ink);padding-top:2px}
 .res .goal span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #rGoalBar{background:#c4cbe0}
@@ -459,6 +477,7 @@ body.compact .speed{font-size:11.5px}
     <div class="scol">
       <div class="eyebrow">Tu nave</div>
       <h2 id="sEngine">—</h2>
+      <div class="moderow" style="border-top:none;padding-top:0"><span>Nave: <b id="sShip">—</b></span><button class="btn primary" id="sHangar">Cambiar de nave</button></div>
       <p class="snz" id="sZone">—</p>
       <p class="snz"><b style="color:var(--accent)">Combustible:</b> lo gasta el motor al acelerar. Se recarga cada vez que escaneas algo por primera vez, cuando completas un sistema, en la base Tierra y, poco a poco, cerca de una estrella.</p>
       <dl class="kv"><dt>Combustible</dt><dd id="sFuel"></dd><dt>Casco</dt><dd id="sHull"></dd><dt>Objetos escaneados</dt><dd id="sScans"></dd><dt>Conocimiento</dt><dd id="sKnow"></dd></dl>
@@ -480,6 +499,16 @@ body.compact .speed{font-size:11.5px}
     <p class="snz" id="misFic" hidden><b style="color:var(--accent)">Ojo:</b> este final es ficción del juego. Todo lo anterior en la misión es real y está documentado.</p>
     <p class="snz" id="misNext"></p>
     <div class="row" style="justify-content:space-between;align-items:center"><span class="mono" id="misReward" style="color:var(--accent);font-size:12.5px"></span><button class="btn primary" id="misOk">Continuar</button></div>
+  </div>
+</div>
+
+<div class="layer" id="hangar" hidden>
+  <button class="close" id="hangarClose" aria-label="Cerrar hangar"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="stroke:#eef2fa;stroke-width:2;stroke-linecap:round"><path d="M3 3l10 10M13 3L3 13"></path></svg></button>
+  <div class="hangarbox" role="dialog" aria-labelledby="hgTitle">
+    <div class="eyebrow">Hangar</div>
+    <h2 id="hgTitle">Elige tu nave</h2>
+    <p class="snz">Cada nave tiene sus fortalezas y sus debilidades. Por ahora puedes probarlas todas; más adelante se irán desbloqueando mientras exploras.</p>
+    <div class="hgrid" id="hgGrid"></div>
   </div>
 </div>
 
@@ -507,7 +536,7 @@ body.compact .speed{font-size:11.5px}
       <p>Pilotea por el sistema solar tal como está ahora, explora más de mil estrellas cercanas y llega hasta el centro de la galaxia, donde vive un agujero negro supermasivo. Por el camino puedes seguir la pista de la señal Wow!, un misterio real de 1977.</p>
       <p>Escanear es avanzar: cada objeto que escaneas te da combustible y te acerca a un motor mejor para llegar más lejos. Las distancias están comprimidas para que el viaje sea jugable; las direcciones y los datos son reales.</p>
       <p style="font-size:11.5px">Datos: órbitas de JPL (NASA) · estrellas del catálogo HYG v4.1 (astronexus, CC BY-SA 4.0) · exoplanetas del NASA Exoplanet Archive (vía Open Exoplanet Catalogue) · objetos de la galaxia de NASA, ESA y publicaciones científicas.</p>
-      <div class="modes"><button class="btn primary" id="startPiloto">Jugar Piloto</button><button class="btn" id="startExpl">Modo Explorador (escuelas)</button></div>
+      <div class="modes"><button class="btn primary" id="startPiloto">Jugar Piloto</button><button class="btn" id="startExpl">Modo Explorador (escuelas)</button><button class="btn" id="introHangar">Elegir nave</button></div>
       <div class="modewarn" id="modeWarn" hidden><p><b>Modo Explorador:</b> es solo para fines educativos. Tienes recursos, pero no hay amenazas. Si eres un gamer que busca riesgo de verdad, juega el modo Piloto.</p>
         <div class="modes"><button class="btn primary" id="goExpl">Entendido, jugar Explorador</button><button class="btn" id="goPil">Prefiero Piloto</button></div></div>
     </div>
@@ -1044,12 +1073,54 @@ function updateBodies(ms){
 /* ---------- Ship (flat paper-dart, like the sketch) ---------- */
 const ship={pos:new THREE.Vector3(),quat:new THREE.Quaternion(),speed:0,throttle:0,turbo:false};
 const shipObj=new THREE.Group();
-(function(){const top=new THREE.MeshBasicMaterial({color:0xdfe5f0,side:THREE.DoubleSide}),under=new THREE.MeshBasicMaterial({color:0xa9b3c9,side:THREE.DoubleSide});
-  const g1=new THREE.BufferGeometry();g1.setAttribute('position',new THREE.Float32BufferAttribute([0,0,-.07, .06,0,.035, 0,.012,.02, 0,0,-.07, 0,.012,.02, -.06,0,.035],3));g1.computeVertexNormals();
-  const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute([0,0,-.07, .06,0,.035, 0,-.006,.025, 0,0,-.07, 0,-.006,.025, -.06,0,.035],3));g2.computeVertexNormals();
-  shipObj.add(new THREE.Mesh(g1,top));shipObj.add(new THREE.Mesh(g2,under));
-  const eng=new THREE.Mesh(new THREE.SphereGeometry(.007,12,8),new THREE.MeshBasicMaterial({color:0xffb13d}));eng.position.set(0,.003,.034);shipObj.add(eng);
-  const glow=new THREE.Mesh(new THREE.RingGeometry(.009,.016,32),new THREE.MeshBasicMaterial({color:0xffb13d,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false}));glow.position.copy(eng.position);shipObj.add(glow);shipObj.userData.glow=glow;})();
+/* Ship roster: each ship trades speed, range, toughness, scanner and agility.
+   stats: speed (velocity ×), fuel (consumption ×), hull (damage taken ×), scan (range ×), scanT (scan time ×), turn (agility ×), solar (recharge ×), radar (range ×) */
+const SM=(c,o)=>new THREE.MeshBasicMaterial(Object.assign({color:c,side:THREE.DoubleSide},o||{}));
+function triMesh(pts,mat){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));g.computeVertexNormals();return new THREE.Mesh(g,mat);}
+function engineGlow(grp,x,y,z,r){const eng=new THREE.Mesh(new THREE.SphereGeometry(r||.007,12,8),SM(0xffb13d));eng.position.set(x,y,z);grp.add(eng);
+  const glow=new THREE.Mesh(new THREE.RingGeometry((r||.007)*1.3,(r||.007)*2.3,32),SM(0xffb13d,{transparent:true,opacity:.35,depthWrite:false}));glow.position.set(x,y,z);grp.add(glow);return glow;}
+const SHIPS=[
+ {id:'colibri',name:'Colibrí',role:'Equilibrada',speed:1,fuel:1,hull:1,scan:1,scanT:1,turn:1,solar:1,radar:1,turbo:5,
+  special:'Buena en todo. Ideal para empezar.',fact:'El ala delta, como la de esta nave, también la usaron los transbordadores espaciales para planear al volver a la Tierra.',plan:'Disponible desde el inicio',view:1,
+  build(g){g.add(triMesh([0,0,-.07, .06,0,.035, 0,.012,.02, 0,0,-.07, 0,.012,.02, -.06,0,.035],SM(0xdfe5f0)));g.add(triMesh([0,0,-.07, .06,0,.035, 0,-.006,.025, 0,0,-.07, 0,-.006,.025, -.06,0,.035],SM(0xa9b3c9)));
+    return engineGlow(g,0,.003,.034);}},
+ {id:'halcon',name:'Halcón',role:'Rápida',speed:1.3,fuel:1.35,hull:1.3,scan:1,scanT:1,turn:1.25,solar:1,radar:1,turbo:6,
+  special:'Vuela un 30 % más rápido y su turbo es más fuerte, pero gasta más y es frágil.',fact:'La nave más rápida construida es la sonda Parker: en 2024 pasó junto al Sol a unos 192 km por segundo.',plan:'Se desbloqueará con el motor de fusión',view:1.1,
+  build(g){g.add(triMesh([0,0,-.095, .052,0,.045, 0,.01,.025, 0,0,-.095, 0,.01,.025, -.052,0,.045],SM(0xe9edf5)));g.add(triMesh([0,0,-.095, .052,0,.045, 0,-.006,.03, 0,0,-.095, 0,-.006,.03, -.052,0,.045],SM(0x9aa3ba)));
+    g.add(triMesh([0,.009,.005, 0,.03,.05, 0,.008,.045],SM(0xff6b5a)));g.add(triMesh([.03,.001,.02, .052,0,.045, .03,.001,.045, -.03,.001,.02, -.052,0,.045, -.03,.001,.045],SM(0xff6b5a)));
+    engineGlow(g,.012,.002,.042,.006);return engineGlow(g,-.012,.002,.042,.006);}},
+ {id:'atlas',name:'Atlas',role:'Resistente',speed:.8,fuel:.65,hull:.55,scan:1,scanT:1,turn:.75,solar:1,radar:1,turbo:5,regen:true,
+  special:'Lenta pero muy resistente, con tanque grande. Repara su casco poco a poco.',fact:'Se inspira en los cargueros que abastecen la Estación Espacial Internacional, como Dragon y Cygnus.',plan:'Se desbloqueará al escanear 15 objetos',view:1,
+  build(g){g.scale.setScalar(.78);g.position.y=-.006;const body=new THREE.Mesh(new THREE.BoxGeometry(.046,.024,.085),SM(0xd5dbe6));g.add(body);const top=new THREE.Mesh(new THREE.BoxGeometry(.03,.008,.05),SM(0xeef2fa));top.position.set(0,.016,-.005);g.add(top);
+    const nose=new THREE.Mesh(new THREE.BoxGeometry(.034,.018,.012),SM(0x5a6a8a));nose.position.set(0,.004,-.047);g.add(nose);
+    for(const s of [-1,1]){const pod=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.07,14),SM(0xe8a25a));pod.rotation.x=Math.PI/2;pod.position.set(s*.036,-.002,.005);g.add(pod);}
+    engineGlow(g,.036,-.002,.042,.006);engineGlow(g,-.036,-.002,.042,.006);return engineGlow(g,0,0,.045,.008);}},
+ {id:'lupa',name:'Lupa',role:'Científica',speed:.9,fuel:1,hull:1.1,scan:1.8,scanT:.5,turn:1,solar:1.2,radar:1.6,turbo:5,
+  special:'Escanea desde casi el doble de distancia y en la mitad del tiempo. Su radar llega más lejos.',fact:'Se inspira en los telescopios espaciales: el espejo dorado de James Webb mide 6,5 metros.',plan:'Se desbloqueará al completar tu primer sistema estelar',view:1.05,
+  build(g){const body=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.07,16),SM(0xe6eaf2));body.rotation.x=Math.PI/2;g.add(body);
+    const mirror=new THREE.Mesh(new THREE.CircleGeometry(.024,6),SM(0xf2c35a));mirror.position.set(0,0,-.038);g.add(mirror);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(.026,.003,6,24),SM(0xb0b8cc));rim.position.set(0,0,-.037);g.add(rim);
+    for(const s of [-1,1]){const p=new THREE.Mesh(new THREE.BoxGeometry(.05,.002,.026),SM(0x4f7fe0));p.position.set(s*.042,0,.012);g.add(p);
+      const l=new THREE.Mesh(new THREE.BoxGeometry(.05,.0025,.002),SM(0xc4d4ff));l.position.set(s*.042,.001,.012);g.add(l);}
+    return engineGlow(g,0,0,.037,.006);}},
+ {id:'vela',name:'Vela',role:'Solar',speed:.9,fuel:.8,hull:1.25,scan:1,scanT:1,turn:.9,solar:3,radar:1,turbo:4,sailAlways:true,
+  special:'Su vela recarga combustible con la luz de las estrellas, incluso mientras acelera. Lejos de las estrellas rinde poco.',fact:'IKAROS, de la agencia espacial de Japón, fue en 2010 la primera nave que viajó impulsada por una vela solar.',plan:'Se desbloqueará con el impulsor estelar',view:1.45,
+  build(g){const sail=new THREE.Mesh(new THREE.PlaneGeometry(.085,.085),SM(0xf5d27a,{transparent:true,opacity:.88}));sail.rotation.x=-Math.PI/2;sail.rotation.z=Math.PI/4;sail.position.y=.004;g.add(sail);
+    for(const r of [Math.PI/4,-Math.PI/4]){const boom=new THREE.Mesh(new THREE.BoxGeometry(.12,.002,.002),SM(0x8a7a5a));boom.rotation.y=r;boom.position.y=.005;g.add(boom);}
+    const core=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.012,16),SM(0xe6eaf2));core.position.y=.006;g.add(core);
+    return engineGlow(g,0,.004,.03,.005);}},
+ {id:'cometa',name:'Cometa',role:'Especial',speed:1.15,fuel:1.1,hull:1,scan:1.1,scanT:.9,turn:1.15,solar:1,radar:1,turbo:5,premium:true,
+  special:'Ágil y con estilo propio, deja una estela de hielo. Diferente, no más poderosa.',fact:'Los cometas son bolas de hielo y polvo: su cola aparece cuando el Sol los calienta y siempre apunta lejos del Sol.',plan:'Será de pago (compra única)',view:1.15,
+  build(g){const hull=new THREE.Mesh(new THREE.SphereGeometry(.02,18,12),SM(0xbfe8ff));hull.scale.set(1,.65,2.2);g.add(hull);
+    const belly=new THREE.Mesh(new THREE.SphereGeometry(.0195,18,12,0,Math.PI*2,Math.PI/2,Math.PI/2),SM(0x6fa8d8));belly.scale.set(1,.65,2.2);g.add(belly);
+    g.add(triMesh([.016,0,.0, .045,-.002,.035, .016,0,.03, -.016,0,.0, -.045,-.002,.035, -.016,0,.03],SM(0x8fd0ff)));
+    g.add(triMesh([-.012,.001,.04, .012,.001,.04, 0,.001,.13],SM(0x9fe8ff,{transparent:true,opacity:.45,depthWrite:false})));g.add(triMesh([-.006,.002,.04, .006,.002,.04, 0,.002,.1],SM(0xeaf8ff,{transparent:true,opacity:.6,depthWrite:false})));
+    return engineGlow(g,0,0,.042,.007);}}];
+const SHIP_BY={};for(const s of SHIPS)SHIP_BY[s.id]=s;
+let curShip=SHIPS[0];
+function setShipModel(id){curShip=SHIP_BY[id]||SHIPS[0];for(const c of shipObj.children.slice()){shipObj.remove(c);c.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose();});}
+  const grp=new THREE.Group();shipObj.userData.glow=curShip.build(grp);shipObj.add(grp);}
+setShipModel('colibri');
 scene.add(shipObj);
 
 /* ---------- State ---------- */
@@ -1100,7 +1171,7 @@ function cycleTarget(dir){const L=contextList();let i=L.indexOf(targetId);i=i<0?
 function refreshTarget(){const t=target();for(const b of bodies)b.label.style.visibility=b===t?'hidden':'';$('tagName').textContent=t.name;$('offname').textContent=t.name;updateLogChip();}
 let CORE=null;function updateLogChip(){if(!CORE)CORE=ORDER.concat(STAR_IDS.filter(id=>B[id].planets.length),EXO_IDS,GAL_IDS,OBS_IDS);const n=ALL_IDS.filter(id=>readingsOf(id).length).length,c=CORE.filter(id=>readingsOf(id).length).length;$('logCount').textContent=n+(n===1?' escaneado':' escaneados');$('pbarFill').style.width=(c/CORE.length*100)+'%';}
 function surfDist(b){return ship.pos.distanceTo(b.sp)-b.R;}
-const scanRange=b=>b.R*3.5+0.9;
+const scanRange=b=>(b.R*3.5+0.9)*curShip.scan;
 function addReading(b){const first=!readingsOf(b.id).length;if(typeof G!=='undefined'){if(!b.obs&&!b.bh)G.lastSafe=b.id;if(typeof scanReward==='function')setTimeout(()=>scanReward(b,first),0);setTimeout(()=>misOnScan(b),0);if(first&&b.myst)setTimeout(()=>addKnow(10,'Misterio registrado: '+b.name),3000);if(first)addKnow(b.star||b.exo||b.gal||b.obs?15:10);else{const rr=readingsOf(b.id),lr=rr[rr.length-1];if(lr&&Math.abs(simMs-lr.sim)>=86400000)addKnow(2);}}const v=liveVals(b);const e=logbook[b.id]||(logbook[b.id]={r:[]});e.r.push({at:Date.now(),sim:Math.round(simMs),sun:v.sun,earth:v.earth});if(e.r.length>30)e.r.splice(1,e.r.length-30);saveLog();updateLogChip();}
 function doScan(){const t=target();
   if(!inScan(t)){if(readingsOf(t.id).length)openCard(t,false);else toast(t.obs?'Para observar objetos tan lejanos necesitas el motor de fusión':'Acércate a '+t.name+' para escanearlo');return;}
@@ -1186,7 +1257,7 @@ function openMap(){closeLayers('map');$('map').hidden=false;const t=target();
   else if(t.star&&t.id!=='sun'||t.exo||ship.pos.length()>3000){mapView='neigh';mapSel=t.exo?t.host:t.star&&t.id!=='sun'?(t.primary||t.id):'st_gl551';}
   else if(MAPSET.includes(targetId)){if(mapView==='neigh')mapView='all';mapSel=targetId;}
   setView(mapView);syncTimeRange();refreshMapCard();}
-function closeLayers(except){for(const id of ['map','card','log','ship','out','quiz','spec','guide','mis'])if(id!==except)$(id).hidden=true;closeWheel(false);}
+function closeLayers(except){for(const id of ['map','card','log','ship','out','quiz','spec','guide','mis','hangar'])if(id!==except)$(id).hidden=true;closeWheel(false);}
 function mapPos(au,R,cx,cy){const r=Math.hypot(au.x,au.y);let f=mapView==='inner'?Math.sqrt(r/3.4):Math.pow(r,0.4)/Math.pow(40,0.4);let rim=false;if(f>1.06){f=1.06;rim=true;}
   const a=Math.atan2(au.y,au.x);return {x:cx+f*R*Math.cos(a),y:cy-f*R*Math.sin(a),rim};}
 function drawMap(){const dpr=Math.min(devicePixelRatio||1,2),w=mc.clientWidth,h=mc.clientHeight;if(!w||!h)return;
@@ -1328,7 +1399,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
   else if(k>='1'&&k<='4')setSpeed(+k-1);else if(k==='0'){simMs=Date.now();setSpeed(0,true);}});
 addEventListener('keyup',e=>{const k=e.key.toLowerCase();keys.delete(k);if(k==='g')stopExtract();if(k==='tab'&&wheel.open&&wheel.mode==='kbd')runWheel(wheel.hot);});
 addEventListener('blur',()=>{keys.clear();if(wheel.mode==='kbd')closeWheel();});
-const anyLayer=()=>['map','card','log','intro','ship','out','quiz','spec','guide','mis'].some(id=>!$(id).hidden);
+const anyLayer=()=>['map','card','log','intro','ship','out','quiz','spec','guide','mis','hangar'].some(id=>!$(id).hidden);
 
 /* Gamepad (standard mapping: Xbox, DualSense, MFi) */
 let padPrev=[];
@@ -1352,9 +1423,10 @@ const ENGINES=[
   {name:'Motor iónico',zone:'el sistema solar interior y el cinturón de asteroides',limit:122,eff:1,real:'Es el motor real de las naves Dawn y BepiColombo: empuja poco, pero gasta muy poco.'},
   {name:'Motor de fusión',zone:'todo el sistema solar, hasta 2 años luz del Sol',limit:38200,eff:0.7,goal:8,real:'Es un concepto en investigación: ninguna nave lo usa todavía. Incluye una batería nuclear como la de Voyager, que da energía lejos del Sol.'},
   {name:'Impulsor estelar',zone:'las estrellas cercanas y sus planetas, hasta unos 50 años luz',limit:Infinity,eff:0.45,goal:18,real:'Es ciencia ficción: no existe ningún motor capaz de llegar a otra estrella en una vida humana.'}];
-const G_DEF={ms:{},seen:{},poi:{},sysDone:{},mis:0,jump:false,mode:null,fuel:100,hull:100,know:0,tier:0,baseT:0,learned:{},disc:{},cool:{},lastSafe:'earth'};
+const G_DEF={ms:{},seen:{},poi:{},sysDone:{},ship:'colibri',mis:0,jump:false,mode:null,fuel:100,hull:100,know:0,tier:0,baseT:0,learned:{},disc:{},cool:{},lastSafe:'earth'};
 let G=Object.assign({},G_DEF);
 try{const raw=JSON.parse(localStorage.getItem('orbita-viva-juego')||'null');if(raw&&typeof raw==='object')G=Object.assign({},G_DEF,raw,{learned:raw.learned||{},disc:raw.disc||{},cool:raw.cool||{},ms:raw.ms||{},seen:raw.seen||{},poi:raw.poi||{},sysDone:raw.sysDone||{}});}catch(e){}
+setShipModel(G.ship);
 function saveG(){try{localStorage.setItem('orbita-viva-juego',JSON.stringify(G));}catch(e){}}
 const piloto=()=>G.mode==='piloto';
 let sail=false,outShown=false,blackout=false,extracting=null,radarFx=null,gateT=0,storm=null,nextStorm=0,saveT=0,teach={};
@@ -1424,7 +1496,7 @@ radarMesh.visible=false;scene.add(radarMesh);billboards.push(radarMesh);
 function setHidden(b,h){b.hidden=h;b.obj.visible=!h;if(!h)ensureExoTex(b);if(b.orbitLine)b.orbitLine.visible=!h;}
 for(const id of EXO_IDS)setHidden(B[id],!G.disc[id]);
 setTimeout(()=>{try{checkProgress(null,true);}catch(e){}},0);
-function radarSystem(){const ns=nearestStar();if(ns.id==='sun')return null;const P=ns.primary?B[ns.primary]:ns;if(ship.pos.distanceTo(P.sp)>Math.max(1500,(P.sysR||0)*6))return null;return P;}
+function radarSystem(){const ns=nearestStar();if(ns.id==='sun')return null;const P=ns.primary?B[ns.primary]:ns;if(ship.pos.distanceTo(P.sp)>Math.max(1500,(P.sysR||0)*6)*curShip.radar)return null;return P;}
 function hiddenIn(P){return systemList(P).filter(id=>B[id].exo&&B[id].hidden);}
 function pulse(){
   const P=radarSystem();if(!P){toast(nearestStar().id==='sun'&&ship.pos.length()<3000?'En el sistema solar todo está a la vista. Usa el radar junto a otras estrellas.':'Acércate más a una estrella para usar el radar');return;}
@@ -1447,7 +1519,7 @@ function updateDebris(dt){const E=B.earth,near=camera.position.distanceTo(E.sp)<
 /* Damage, shadow, storms */
 let hurtT=0;
 function hurt(n,msg){if(performance.now()-hurtT<700)return;hurtT=performance.now();const h=$('hit');h.classList.add('on');setTimeout(()=>h.classList.remove('on'),60);
-  try{navigator.vibrate&&navigator.vibrate(120);}catch(e){}if(msg)toast(msg);if(!piloto())return;G.hull=Math.max(0,G.hull-n);if(G.hull<=0)respawn();}
+  try{navigator.vibrate&&navigator.vibrate(120);}catch(e){}if(msg)toast(msg);if(!piloto())return;G.hull=Math.max(0,G.hull-n*curShip.hull);if(G.hull<=0)respawn();}
 function inShadow(){const L=ship.pos.length();if(L<1e-6)return false;const dir=_w.copy(ship.pos).divideScalar(L);
   for(const b of bodies){if(b.star||b.craft||b.hidden||b.R<0.05)continue;const s=b.sp.dot(dir);if(s<=0||s>=L)continue;
     const perp=Math.sqrt(Math.max(0,b.sp.lengthSq()-s*s));if(perp<b.R*1.05&&L-s<b.R*40)return true;}return false;}
@@ -1543,7 +1615,7 @@ function openShip(){closeLayers('ship');renderShip();$('ship').hidden=false;}
 function renderShip(){const E=ENGINES[G.tier];
   $('sMode').textContent=G.mode==='explorador'?'Explorador (sin amenazas)':'Piloto';$('sModeBtn').textContent=G.mode==='explorador'?'Cambiar a Piloto':'Cambiar a Explorador';
   $('sEngine').textContent=E.name+(G.jump?' + módulo de salto':'');$('sZone').textContent='Llega a '+(G.jump?'toda la galaxia':E.zone)+'. '+E.real;
-  $('sFuel').textContent=Math.round(G.fuel);$('sHull').textContent=Math.round(G.hull);$('sKnow').textContent=G.know;$('sScans').textContent=ALL_IDS.filter(id=>readingsOf(id).length).length;
+  $('sShip').textContent=curShip.name+' · '+curShip.role.toLowerCase();$('sFuel').textContent=Math.round(G.fuel);$('sHull').textContent=Math.round(G.hull);$('sKnow').textContent=G.know;$('sScans').textContent=ALL_IDS.filter(id=>readingsOf(id).length).length;
   $('sLearned').textContent=['gas','hielo','roca','enana'].map(t=>(G.learned[t]?'✓ ':'· ')+RES_NAME[t].replace(/^un[a]? /,'')).join('   ');
   const nx=$('sNext');nx.innerHTML='';const g=nextGoal();
   if(!g){const p=document.createElement('p');p.className='snz';p.textContent='Tu nave está completa: impulsor estelar y módulo de salto. Ve por Sagitario A*, en el centro de la galaxia.';nx.appendChild(p);return;}
@@ -1555,6 +1627,30 @@ $('shipClose').onclick=()=>{$('ship').hidden=true;};
 function openGuide(){closeLayers('guide');$('guide').hidden=false;const gb=document.querySelector('.guidebox');if(gb)gb.scrollTop=0;try{$('guideGo').focus({preventScroll:true});}catch(e){}G.seen.guide=1;saveG();}
 $('sGuide').onclick=openGuide;$('guideGo').onclick=()=>{$('guide').hidden=true;};$('guideClose').onclick=()=>{$('guide').hidden=true;};
 $('res').onclick=openShip;
+/* Hangar: choose a ship. For now every ship is available to try (unlocks and paid ships come later). */
+const UNLOCK_ALL=true;let shipThumbs=null;
+function makeThumbs(){if(shipThumbs)return shipThumbs;shipThumbs={};let r=null;
+  try{r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});r.setPixelRatio(2);r.setSize(240,130);
+    const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,240/130,.001,10);
+    for(const S of SHIPS){const g=new THREE.Group();S.build(g);g.rotation.y=-0.65;sc.add(g);const k=0.21*(S.view||1);cam.position.set(k*0.55,k*0.5,k*0.75);cam.lookAt(0,-.004,0);
+      r.render(sc,cam);shipThumbs[S.id]=r.domElement.toDataURL('image/png');sc.remove(g);g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose();});}}
+  catch(e){}finally{if(r){r.dispose();try{r.forceContextLoss();}catch(e){}}}return shipThumbs;}
+const STATROWS=[['Velocidad',s=>s.speed,.8,1.3],['Autonomía',s=>1/s.fuel,1/1.35,1/.65],['Resistencia',s=>1/s.hull,1/1.3,1/.55],['Escáner',s=>s.scan/s.scanT,1,3.6],['Agilidad',s=>s.turn,.75,1.25]];
+function pips(v,lo,hi){const n=Math.max(1,Math.min(5,Math.round(1+(v-lo)/(hi-lo)*4)));let s='';for(let i=0;i<5;i++)s+='<i'+(i<n?' class="on"':'')+'></i>';return s;}
+function openHangar(){closeLayers('hangar');const th=makeThumbs(),grid=$('hgGrid');grid.textContent='';
+  for(const S of SHIPS){const c=document.createElement('div');c.className='hcard'+(S.id===curShip.id?' on':'');
+    c.innerHTML='<div class="hthumb"><img alt=""></div><div class="hhead"><b></b><span class="eyebrow"></span></div><div class="hstats"></div><p class="snz hsp"></p><p class="snz hfact"></p><p class="hplan mono"></p><button class="btn"></button>';
+    const img=c.querySelector('img');if(th[S.id])img.src=th[S.id];else img.remove();img.alt='Nave '+S.name;
+    c.querySelector('b').textContent=S.name;c.querySelector('.eyebrow').textContent=S.role+(S.premium?' · de pago':'');
+    const st=c.querySelector('.hstats');for(const [lab,f,lo,hi] of STATROWS){const row=document.createElement('div');row.className='hst';row.innerHTML='<span></span><span class="pips">'+pips(f(S),lo,hi)+'</span>';row.firstChild.textContent=lab;st.appendChild(row);}
+    c.querySelector('.hsp').textContent=S.special;c.querySelector('.hfact').textContent=S.fact;c.querySelector('.hplan').textContent=(UNLOCK_ALL?'Prueba libre · ':'')+S.plan;
+    const btn=c.querySelector('button');const on=S.id===curShip.id;btn.textContent=on?'En uso':'Usar esta nave';btn.className='btn'+(on?'':' primary');btn.disabled=on;
+    btn.onclick=()=>{G.ship=S.id;saveG();setShipModel(S.id);openHangar();toast('Ahora pilotas la '+S.name+': '+S.special,5000);};
+    grid.appendChild(c);}
+  $('hangar').hidden=false;}
+let hangarFromIntro=false;
+$('sHangar').onclick=openHangar;$('hangarClose').onclick=()=>{$('hangar').hidden=true;if(hangarFromIntro){hangarFromIntro=false;$('intro').hidden=false;}};
+$('introHangar').onclick=()=>{hangarFromIntro=true;$('intro').hidden=true;openHangar();};
 $('sUIBtn').onclick=()=>{uiSize=(uiSize+1)%UIS.length;try{localStorage.setItem('orbita-ui',uiSize);}catch(e){}applyUI();};
 $('sFullBtn').onclick=()=>{if(document.fullscreenElement){try{document.exitFullscreen();}catch(e){}return;}const el=document.documentElement;try{const p=el.requestFullscreen&&el.requestFullscreen();if(p&&p.catch)p.catch(()=>toast('Este navegador no permite pantalla completa aquí. En el celular, usa “Agregar a pantalla principal”.',6000));else if(!p)toast('Este navegador no permite pantalla completa aquí.');}catch(e){toast('Este navegador no permite pantalla completa aquí.');}};
 
@@ -1569,10 +1665,11 @@ function gameStep(dt){if(!started)return;
   saveT+=dt;if(saveT>4){saveT=0;saveG();}}
 function fuelStep(dt,thr,turbo){if(!started)return {thr,turbo};
   if(G.fuel<=0){if(!outShown){outShown=true;ship.throttle=0;openOut();}thr=sail?Math.min(Math.abs(thr),0.15):0;turbo=false;}
-  else{if(G.fuel>10)outShown=false;G.fuel=Math.max(0,G.fuel-Math.abs(thr)*0.56*(turbo?3:1)*ENGINES[G.tier].eff*dt);}
+  else{if(G.fuel>10)outShown=false;G.fuel=Math.max(0,G.fuel-Math.abs(thr)*0.56*(turbo?3:1)*ENGINES[G.tier].eff*curShip.fuel*dt);}
   return {thr,turbo};}
 function energyTick(hd){const ns=nearestStar(),d=Math.max(ship.pos.distanceTo(ns.sp),1e-3),au=Math.pow(d/SC,1/PW),Ls=Math.pow(10,(4.83-ns.absmag)/2.5),flux=Ls/(au*au);
-  if(G.fuel<100&&Math.abs(ship.throttle)<0.05)G.fuel=Math.min(100,G.fuel+clamp(flux,0,1.5)*0.35*hd);
+  if(G.fuel<100&&(Math.abs(ship.throttle)<0.05||curShip.sailAlways))G.fuel=Math.min(100,G.fuel+clamp(flux,0,1.5)*0.35*curShip.solar*hd);
+  if(curShip.regen&&piloto()&&G.hull<100)G.hull=Math.min(100,G.hull+0.25*hd);
   if(flux<0.05&&G.tier===0)teachOnce('cold','Lejos del Sol tus paneles casi no recargan combustible: a Júpiter llega 27 veces menos luz que a la Tierra. Por eso Voyager y New Horizons usan energía nuclear.',7500);
   if(G.fuel<=0&&!sail&&$('out').hidden&&!outShown)openOut();}
 function resHUD(){const set=(id,v)=>{const el=$(id);el.style.width=clamp(v,0,100)+'%';el.classList.toggle('low',v<20);};set('rFuel',G.fuel);set('rHull',G.hull);$('rHullRow').hidden=!piloto();$('rSail').hidden=!sail;
@@ -1742,8 +1839,8 @@ function step(){
   let dNear=Infinity,near=null;for(const b of bodies){if(b.hidden||b.obs)continue;const d=b.soft?ship.pos.distanceTo(b.sp)+0.5:surfDist(b);if(d<dNear){dNear=d;near=b;}}
   const t=target();
   {
-    ship.quat.multiply(_qa.setFromAxisAngle(AX.y,-yaw*1.5*dt));ship.quat.multiply(_qa.setFromAxisAngle(AX.x,pitch*1.3*dt));ship.quat.multiply(_qa.setFromAxisAngle(AX.z,-roll*2.2*dt));
-    const inBelt=sr0()>86&&sr0()<120&&Math.abs(ship.pos.y)<20;const dn=Math.min(dNear,inBelt?40:1e12),scaleF=dn<198?Math.max(0.012,dn/22):9*Math.pow(dn/198,0.85),tgt=thr*14*scaleF*(turbo?5:1);ship.speed+=(tgt-ship.speed)*(1-Math.exp(-dt*3));
+    const TR=curShip.turn;ship.quat.multiply(_qa.setFromAxisAngle(AX.y,-yaw*1.5*TR*dt));ship.quat.multiply(_qa.setFromAxisAngle(AX.x,pitch*1.3*TR*dt));ship.quat.multiply(_qa.setFromAxisAngle(AX.z,-roll*2.2*TR*dt));
+    const inBelt=sr0()>86&&sr0()<120&&Math.abs(ship.pos.y)<20;const dn=Math.min(dNear,inBelt?40:1e12),scaleF=dn<198?Math.max(0.012,dn/22):9*Math.pow(dn/198,0.85),tgt=thr*14*scaleF*curShip.speed*(turbo?curShip.turbo:1);ship.speed+=(tgt-ship.speed)*(1-Math.exp(-dt*3));
   }
   ship.quat.normalize();
   ship.pos.addScaledVector(_v.set(0,0,-1).applyQuaternion(ship.quat),ship.speed*dt);
@@ -1760,7 +1857,7 @@ function step(){
   window.__stars.position.copy(camera.position);updateGlows();
   for(const m of billboards)m.quaternion.copy(camera.quaternion);
   if(scanning){const sb=B[scanning.id];if(sb!==target()||!inScan(sb)){scanning=null;toast('Escaneo interrumpido');}
-    else{scanning.p+=dt/1.2;if(scanning.p>=1){scanning=null;addReading(sb);openCard(sb,true);}}}
+    else{scanning.p+=dt/(1.2*curShip.scanT);if(scanning.p>=1){scanning=null;addReading(sb);openCard(sb,true);}}}
   gameStep(dt);
   renderer.render(scene,camera);
   overlay(dt,t);

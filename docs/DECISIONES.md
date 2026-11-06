@@ -37,6 +37,22 @@ Reemplazó el sistema de recursos anterior (combustible, energía, casco, conoci
 - En pantallas chicas: etiqueta del objetivo en una línea, pistas de inicio una a la vez, sin etiquetas de estrellas lejanas dentro del sistema solar hasta tener el impulsor estelar.
 - Al empezar en un celular intenta pantalla completa y bloqueo horizontal. En el panel de la nave: botón de pantalla completa y tamaño de interfaz (pequeña, normal, grande).
 
+## Naves (v7.1, nov 2026)
+
+Selector en el **Hangar** (panel de la nave → "Cambiar de nave", o "Elegir nave" en la pantalla de inicio). Por ahora todas se pueden probar (`UNLOCK_ALL=true`); el desbloqueo progresivo y las naves de pago vienen después.
+
+| Nave | Rol | Velocidad | Consumo | Daño recibido | Escáner | Agilidad | Especial | Plan de desbloqueo |
+|---|---|---|---|---|---|---|---|---|
+| Colibrí | Equilibrada | ×1 | ×1 | ×1 | ×1 | ×1 | — | Desde el inicio |
+| Halcón | Rápida | ×1,3 (turbo ×6) | ×1,35 | ×1,3 | ×1 | ×1,25 | Turbo más fuerte | Motor de fusión |
+| Atlas | Resistente | ×0,8 | ×0,65 | ×0,55 | ×1 | ×0,75 | Repara el casco poco a poco | 15 objetos escaneados |
+| Lupa | Científica | ×0,9 | ×1 | ×1,1 | alcance ×1,8, tiempo ×0,5 | ×1 | Radar ×1,6 | Completar un sistema estelar |
+| Vela | Solar | ×0,9 (turbo ×4) | ×0,8 | ×1,25 | ×1 | ×0,9 | Recarga solar ×3, incluso acelerando | Impulsor estelar |
+| Cometa | Especial | ×1,15 | ×1,1 | ×1 | ×1,1 | ×1,15 | Estilo propio (estela de hielo) | De pago (compra única) |
+
+- Las naves son "distintas, no mejores": cada ventaja tiene un costo. Recomendación: las de pago deben ser cosméticas o equilibradas, no más poderosas, para no romper el juego ni la confianza de padres y escuelas.
+- Cada nave trae un dato real (Parker, IKAROS, Webb, cargueros de la EEI).
+
 ## Contenido
 
 - Vecindario de 50 años luz (1.052 estrellas, 234 exoplanetas, 61 enanas blancas).
@@ -55,6 +71,7 @@ Reemplazó el sistema de recursos anterior (combustible, energía, casco, conoci
 
 | Versión | Fecha | Cambios |
 |---|---|---|
+| v7.1 | nov 2026 | Hangar con 6 naves y estadísticas propias |
 | v7 | nov 2026 | Escanear es avanzar, Cabina limpia, pantalla completa, migración a GitHub |
 | v6.1 | oct 2026 | Menos consumo de combustible (tanque ≈ 3 min a fondo, turbo ×3) |
 | v6 | oct 2026 | Galaxia, 50 años luz, misión Wow!, misterios, puntos de interés, materiales raros |
@@ -63,7 +80,7 @@ Reemplazó el sistema de recursos anterior (combustible, energía, casco, conoci
 
 ## Pendientes
 
-- Desarrollo de naves: diseños y formas de funcionamiento (siguiente fase).
+- Naves: activar el desbloqueo progresivo, compra de la nave de pago, más naves y mejoras por nave.
 - Navegar los paneles con el mando de Xbox.
 - Sonido y música.
 - Datos aportados por los usuarios.

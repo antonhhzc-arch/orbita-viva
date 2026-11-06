@@ -16,6 +16,7 @@ Juego educativo de exploración espacial en un solo archivo HTML (three.js r128)
 - Escala comprimida: `toScene(au)=SC·r^PW` con SC=60, PW=0.55; `fromScene` es la inversa.
 - Datos: `STAR_DATA` (estrellas y exoplanetas), bloque de galaxia (`GAL`, `OBS`, `buildGalaxy`).
 - Juego: estado `G` en localStorage `orbita-viva-juego`; `ENGINES` (metas de escaneo), `nextGoal`, `checkProgress`, `scanReward`, radar, tormentas, misión `MIS`, puntos de interés `POI_DATA`.
+- Naves: `SHIPS` (estadísticas y modelo `build`), `curShip`, `setShipModel`, hangar `openHangar`; `UNLOCK_ALL` deja probar todas.
 - Bucle: `step()` → `gameStep`, `fuelStep`, `overlay` (etiquetas y HUD), `lodTick`.
 
 ## Reglas

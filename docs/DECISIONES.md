@@ -45,21 +45,27 @@ Selector en el **Hangar** (panel de la nave → "Cambiar de nave", o "Elegir nav
 - **Excluido:** el caza de cuatro alas del diseño original es el X-wing de Star Wars (Lucasfilm/Disney); se reemplazó por el Halcón, un caza propio. Los vehículos son genéricos y sin marcas.
 - **Pendiente de arte:** Halcón, Lupa, Vela, Expreso (bus) y Brisa (scooter) usan por ahora una imagen 3D. En la lámina original el bus y la scooter se superponen.
 
-### Naves (se desbloquearán explorando)
+### Naves: cada una tiene un trabajo (v7.4, nov 2026)
 
-| Nave | Rol | Velocidad | Consumo | Daño recibido | Escáner | Agilidad | Especial | Plan de desbloqueo |
-|---|---|---|---|---|---|---|---|---|
-| Colibrí (avión de papel) | Equilibrada | ×1 | ×1 | ×1 | ×1 | ×1 | — | Desde el inicio |
-| Cohete | Potente | ×1,15 (turbo ×7) | ×1,2 | ×0,9 | ×1 | ×0,7 | Mejor turbo | 10 objetos escaneados |
-| Halcón | Rápida | ×1,3 (turbo ×6) | ×1,35 | ×1,3 | ×1 | ×1,25 | — | Motor de fusión |
-| Atlas (transbordador) | Resistente | ×0,8 | ×0,65 | ×0,55 | ×1 | ×0,75 | Repara el casco | 25 objetos escaneados |
-| Ovni | Misteriosa | ×1 | ×1 | ×1,1 | ×1,3 (tiempo ×0,8) | ×1,5 | Doble conocimiento en misterios | Primer misterio registrado |
-| Lupa | Científica | ×0,9 | ×1 | ×1,1 | ×1,8 (tiempo ×0,5) | ×1 | Radar ×1,6 | Completar un sistema estelar |
-| Vela | Solar | ×0,9 (turbo ×4) | ×0,8 | ×1,25 | ×1 | ×0,9 | Recarga solar ×3, incluso acelerando | Impulsor estelar |
+Decisión del dueño: todas pueden ir a todas partes, pero cada una es mucho mejor en su trabajo; se puede cambiar de nave en cualquier momento (rueda → Hangar). La velocidad depende de la zona: "cerca de planetas" (distancia a la superficie más cercana < 60) y "espacio profundo" (> 400), con mezcla gradual entre ambas.
+
+| Nave | Trabajo | Cerca de planetas | Espacio profundo | Consumo | Daño recibido | Otros | Plan de desbloqueo |
+|---|---|---|---|---|---|---|---|
+| Colibrí | Un poco de todo | ×1 | ×1 | ×1 | ×1 | — | Desde el inicio |
+| Cohete | Viajar entre sistemas | ×0,8 | ×3 | ×1,1 | ×1 | giro ×0,7 | Impulsor estelar |
+| Halcón | Maniobrar entre objetos | ×1,8 | ×1 | ×1,2 | ×1,4 | giro ×1,4 | Motor de fusión |
+| Atlas | Viajes largos sin recargar | ×0,85 | ×1,1 | ×0,5 | ×0,5 | repara el casco | 25 objetos escaneados |
+| Ovni | Peligros y misterios | ×1 | ×1 | ×1 | ×0,8 | inmune a tormentas, resiste agujeros negros, ×2 conocimiento en misterios | Primer misterio |
+| Lupa | Escanear | ×0,9 | ×0,9 | ×1 | ×1,1 | alcance ×2,2, tiempo ×0,25, ×2 combustible por escaneo, radar ×2 | Completar un sistema estelar |
+| Vela | Recargar combustible | ×0,9 | ×1,15 | ×0,9 | ×1,2 | recarga solar ×4, incluso acelerando | 15 objetos escaneados |
 
 ### Garaje espacial (colección, futura parte de pago)
 
-Diferencias pequeñas (±15 %), nunca ventajas grandes: Aleta (clásico), Neón (deportivo), Chatarra (camioneta), Rugido (muscle car), Burbuja (auto burbuja), Combi, Expreso (bus), Brisa (scooter), Trueno (chopper), Rayo (moto deportiva). Cada uno trae un dato real.
+Cada vehículo copia el trabajo de una nave (campo `base`): Aleta y Expreso → Atlas; Neón y Rayo → Halcón; Chatarra → Ovni; Rugido y Trueno → Cohete; Burbuja → Lupa; Combi → Vela; Brisa → Colibrí. Pagar da estilo, no ventaja.
+
+### Modelos 3D
+
+Estilo caricatura: sombreado de 3 tonos horneado en colores de vértice, contorno negro (malla inversa) y llamas animadas que crecen al acelerar. Kit en `SHIPS` (funciones `part`, `lathe`, `side`, `plate`, `nozzle`, `flame`).
 
 Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper el juego ni la confianza de padres y escuelas.
 
@@ -81,6 +87,8 @@ Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper e
 
 | Versión | Fecha | Cambios |
 |---|---|---|
+| v7.4 | nov 2026 | Cada nave con un trabajo propio y modelos 3D estilo caricatura |
+| v7.3 | nov 2026 | Hangar más visible (inicio y rueda) |
 | v7.2 | nov 2026 | Diseños del dueño: 7 naves + Garaje espacial con 10 vehículos |
 | v7.1 | nov 2026 | Hangar con 6 naves y estadísticas propias |
 | v7 | nov 2026 | Escanear es avanzar, Cabina limpia, pantalla completa, migración a GitHub |

@@ -37,21 +37,31 @@ Reemplazó el sistema de recursos anterior (combustible, energía, casco, conoci
 - En pantallas chicas: etiqueta del objetivo en una línea, pistas de inicio una a la vez, sin etiquetas de estrellas lejanas dentro del sistema solar hasta tener el impulsor estelar.
 - Al empezar en un celular intenta pantalla completa y bloqueo horizontal. En el panel de la nave: botón de pantalla completa y tamaño de interfaz (pequeña, normal, grande).
 
-## Naves (v7.1, nov 2026)
+## Naves y Garaje espacial (v7.2, nov 2026)
 
-Selector en el **Hangar** (panel de la nave → "Cambiar de nave", o "Elegir nave" en la pantalla de inicio). Por ahora todas se pueden probar (`UNLOCK_ALL=true`); el desbloqueo progresivo y las naves de pago vienen después.
+Selector en el **Hangar** (panel de la nave → "Cambiar de nave", o "Elegir nave" en el inicio). Por ahora todo se puede probar (`UNLOCK_ALL=true`).
+
+- **Arte:** las ilustraciones del dueño se usan como imagen de cada tarjeta del Hangar (`SHIP_ART`, al logo de la combi se le quitó la marca). En vuelo cada nave es un modelo 3D sencillo en el estilo plano del juego, con su forma y colores.
+- **Excluido:** el caza de cuatro alas del diseño original es el X-wing de Star Wars (Lucasfilm/Disney); se reemplazó por el Halcón, un caza propio. Los vehículos son genéricos y sin marcas.
+- **Pendiente de arte:** Halcón, Lupa, Vela, Expreso (bus) y Brisa (scooter) usan por ahora una imagen 3D. En la lámina original el bus y la scooter se superponen.
+
+### Naves (se desbloquearán explorando)
 
 | Nave | Rol | Velocidad | Consumo | Daño recibido | Escáner | Agilidad | Especial | Plan de desbloqueo |
 |---|---|---|---|---|---|---|---|---|
-| Colibrí | Equilibrada | ×1 | ×1 | ×1 | ×1 | ×1 | — | Desde el inicio |
-| Halcón | Rápida | ×1,3 (turbo ×6) | ×1,35 | ×1,3 | ×1 | ×1,25 | Turbo más fuerte | Motor de fusión |
-| Atlas | Resistente | ×0,8 | ×0,65 | ×0,55 | ×1 | ×0,75 | Repara el casco poco a poco | 15 objetos escaneados |
-| Lupa | Científica | ×0,9 | ×1 | ×1,1 | alcance ×1,8, tiempo ×0,5 | ×1 | Radar ×1,6 | Completar un sistema estelar |
+| Colibrí (avión de papel) | Equilibrada | ×1 | ×1 | ×1 | ×1 | ×1 | — | Desde el inicio |
+| Cohete | Potente | ×1,15 (turbo ×7) | ×1,2 | ×0,9 | ×1 | ×0,7 | Mejor turbo | 10 objetos escaneados |
+| Halcón | Rápida | ×1,3 (turbo ×6) | ×1,35 | ×1,3 | ×1 | ×1,25 | — | Motor de fusión |
+| Atlas (transbordador) | Resistente | ×0,8 | ×0,65 | ×0,55 | ×1 | ×0,75 | Repara el casco | 25 objetos escaneados |
+| Ovni | Misteriosa | ×1 | ×1 | ×1,1 | ×1,3 (tiempo ×0,8) | ×1,5 | Doble conocimiento en misterios | Primer misterio registrado |
+| Lupa | Científica | ×0,9 | ×1 | ×1,1 | ×1,8 (tiempo ×0,5) | ×1 | Radar ×1,6 | Completar un sistema estelar |
 | Vela | Solar | ×0,9 (turbo ×4) | ×0,8 | ×1,25 | ×1 | ×0,9 | Recarga solar ×3, incluso acelerando | Impulsor estelar |
-| Cometa | Especial | ×1,15 | ×1,1 | ×1 | ×1,1 | ×1,15 | Estilo propio (estela de hielo) | De pago (compra única) |
 
-- Las naves son "distintas, no mejores": cada ventaja tiene un costo. Recomendación: las de pago deben ser cosméticas o equilibradas, no más poderosas, para no romper el juego ni la confianza de padres y escuelas.
-- Cada nave trae un dato real (Parker, IKAROS, Webb, cargueros de la EEI).
+### Garaje espacial (colección, futura parte de pago)
+
+Diferencias pequeñas (±15 %), nunca ventajas grandes: Aleta (clásico), Neón (deportivo), Chatarra (camioneta), Rugido (muscle car), Burbuja (auto burbuja), Combi, Expreso (bus), Brisa (scooter), Trueno (chopper), Rayo (moto deportiva). Cada uno trae un dato real.
+
+Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper el juego ni la confianza de padres y escuelas.
 
 ## Contenido
 
@@ -71,6 +81,7 @@ Selector en el **Hangar** (panel de la nave → "Cambiar de nave", o "Elegir nav
 
 | Versión | Fecha | Cambios |
 |---|---|---|
+| v7.2 | nov 2026 | Diseños del dueño: 7 naves + Garaje espacial con 10 vehículos |
 | v7.1 | nov 2026 | Hangar con 6 naves y estadísticas propias |
 | v7 | nov 2026 | Escanear es avanzar, Cabina limpia, pantalla completa, migración a GitHub |
 | v6.1 | oct 2026 | Menos consumo de combustible (tanque ≈ 3 min a fondo, turbo ×3) |

@@ -889,6 +889,11 @@ for(const b of STARB){if(b.id==='sun')continue;if(!b.primary){b.sp.copy(toScene(
 for(const b of STARB){if(!b.primary)continue;const P=B[b.primary],d=b.sdir;b.sp.copy(P.sp).addScaledVector(eclToScene({x:d[0],y:d[1],z:d[2]}).normalize(),SC*Math.pow(b.sepAU,PW));
   b.au={x:P.au.x+d[0]*b.sepAU,y:P.au.y+d[1]*b.sepAU,z:P.au.z+d[2]*b.sepAU};b.ly=P.ly;}
 for(const b of STARB){b.obj.position.copy(b.sp);b.prev.copy(b.sp);}
+/* Stars and still galaxy objects never move: compute their matrices once instead of every frame */
+function freezeStatic(){scene.matrixAutoUpdate=false;scene.updateMatrix();
+  const freeze=o=>{o.updateMatrixWorld(true);o.traverse(x=>{x.matrixAutoUpdate=false;});};
+  for(const id of STAR_IDS){if(id==='sun')continue;freeze(B[id].obj);}
+  for(const id of GAL_IDS){const b=B[id];if(b.obs||(b.obj.userData.anim&&b.obj.userData.anim.length))continue;freeze(b.obj);}}
 B.sun.obj.visible=true;
 /* Exoplanets: real a, period, size and temperature; the place in the orbit and the orbit tilt are not known for most, so they are approximate */
 function exoKindOf(p){const Re=p.Re||1,T=p.T||250;
@@ -1581,9 +1586,15 @@ const ENGINES=[
 const G_DEF={ms:{},seen:{},poi:{},sysDone:{},ship:'colibri',mis:0,jump:false,mode:null,fuel:100,hull:100,know:0,tier:0,baseT:0,learned:{},disc:{},cool:{},lastSafe:'earth'};
 let G=Object.assign({},G_DEF);
 try{const raw=JSON.parse(localStorage.getItem('orbita-viva-juego')||'null');if(raw&&typeof raw==='object')G=Object.assign({},G_DEF,raw,{learned:raw.learned||{},disc:raw.disc||{},cool:raw.cool||{},ms:raw.ms||{},seen:raw.seen||{},poi:raw.poi||{},sysDone:raw.sysDone||{}});}catch(e){}
+(function sanitizeG(){const num=(v,lo,hi,d)=>{v=Number(v);return Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):d;};
+  G.fuel=num(G.fuel,0,100,100);G.hull=num(G.hull,0,100,100);if(G.hull<1)G.hull=60;G.know=Math.round(num(G.know,0,1e9,0));G.tier=Math.round(num(G.tier,0,ENGINES.length-1,0));
+  G.mis=Math.round(num(G.mis,0,6,0));G.baseT=num(G.baseT,0,9e15,0);G.jump=G.jump===true;if(!SHIP_BY[G.ship])G.ship='colibri';
+  if(G.mode!=='piloto'&&G.mode!=='explorador')G.mode=null;if(typeof G.lastSafe!=='string'||!B[G.lastSafe])G.lastSafe='earth';
+  for(const k of ['learned','disc','cool','ms','seen','poi','sysDone'])if(!G[k]||typeof G[k]!=='object'||Array.isArray(G[k]))G[k]={};})();
 setShipModel(G.ship);
 function saveG(){try{localStorage.setItem('orbita-viva-juego',JSON.stringify(G));}catch(e){}}
 const piloto=()=>G.mode==='piloto';
+const GAL_LIMIT=SC*Math.pow(65000*LY_AU,PW); /* about 65,000 light years from the Sun: past the far edge of the Milky Way disk */
 let sail=false,outShown=false,blackout=false,extracting=null,radarFx=null,gateT=0,storm=null,nextStorm=0,saveT=0,teach={};
 function teachOnce(k,msg,ms){if(teach[k])return;teach[k]=1;toast(msg,ms||6500);}
 function addKnow(n,why){G.know+=n;if(why)toast(why+' · +'+n+' conocimiento');saveG();}
@@ -1812,8 +1823,8 @@ $('sFullBtn').onclick=()=>{if(document.fullscreenElement){try{document.exitFulls
 
 /* Per-frame game logic */
 function gameStep(dt){if(!started)return;
-  const L=ship.pos.length(),lim=G.jump?Infinity:ENGINES[G.tier].limit;
-  if(L>lim){ship.pos.setLength(lim);ship.speed*=0.4;if(performance.now()-gateT>5000){gateT=performance.now();const N=ENGINES[G.tier+1];toast(N?'Tu '+ENGINES[G.tier].name.toLowerCase()+' no llega más lejos. Mejora al '+N.name.toLowerCase()+' desde el panel de la nave.':'Llegaste al borde del vecindario solar, a unos 50 años luz. Para viajar por la galaxia necesitas el módulo de salto galáctico: míralo en el panel de la nave.',6500);}}
+  const L=ship.pos.length(),lim=G.jump?GAL_LIMIT:ENGINES[G.tier].limit;
+  if(L>lim){ship.pos.setLength(lim);ship.speed*=0.4;if(performance.now()-gateT>5000){gateT=performance.now();const N=ENGINES[G.tier+1];toast(G.jump?'Llegaste al borde de la Vía Láctea. Más allá hay un vacío enorme: la galaxia grande más cercana, Andrómeda, está a 2,5 millones de años luz.':N?'Tu '+ENGINES[G.tier].name.toLowerCase()+' no llega más lejos. Mejora al '+N.name.toLowerCase()+' desde el panel de la nave.':'Llegaste al borde del vecindario solar, a unos 50 años luz. Para viajar por la galaxia necesitas el módulo de salto galáctico: míralo en el panel de la nave.',6500);}}
   if(L>NEIGH_LIMIT*1.02&&!G.ms.gal){G.ms.gal=1;addKnow(30,'Frontera: saliste del vecindario solar');}
   if(surfDist(B.earth)<B.earth.R*3&&Date.now()>(G.baseT||0)&&(G.fuel<98||G.hull<98)){G.fuel=100;G.hull=100;G.baseT=Date.now()+60000;sail=false;saveG();toast('Base Tierra: tanque lleno y casco reparado',3500);}
   if(radarFx){radarFx.t+=dt;const k=radarFx.t/1.6;radarMesh.position.copy(radarFx.at);radarMesh.scale.setScalar(0.5+k*radarFx.max);radarMesh.material.opacity=Math.max(0,.7*(1-k));if(k>=1){radarFx=null;radarMesh.visible=false;}}
@@ -2012,7 +2023,7 @@ function step(){
   camQ.slerp(ship.quat,1-Math.exp(-dt*7));
   camera.position.copy(ship.pos).add(_v.copy(camOff).applyQuaternion(camQ));camera.quaternion.copy(camQ).multiply(camTilt);if(shakeAmt)camera.position.add(_v.set((Math.random()-.5)*shakeAmt,(Math.random()-.5)*shakeAmt,0).applyQuaternion(camQ));camera.updateMatrixWorld();obsStep();animGalaxy(dt);
   window.__stars.position.copy(camera.position);updateGlows();
-  for(const m of billboards)m.quaternion.copy(camera.quaternion);
+  for(const m of billboards){if(m.matrixAutoUpdate){m.quaternion.copy(camera.quaternion);continue;}if(m.parent&&!m.parent.visible)continue;m.quaternion.copy(camera.quaternion);m.updateMatrix();}
   if(scanning){const sb=B[scanning.id];if(sb!==target()||!inScan(sb)){scanning=null;toast('Escaneo interrumpido');}
     else{scanning.p+=dt/(1.2*curShip.scanT);if(scanning.p>=1){scanning=null;addReading(sb);openCard(sb,true);}}}
   gameStep(dt);
@@ -2023,12 +2034,15 @@ function step(){
 
 function overlay(dt,t){
   const W=innerWidth,H=innerHeight,galLbl=[];
-  for(const b of bodies){if(b===t||b.hidden){b.label.style.display='none';continue;}
+  const shipOut=ship.pos.length()>3000;
+  for(const b of bodies){const L=b.label;
+    if(b===t||b.hidden){if(L._v!==0){L.style.display='none';L._v=0;}continue;}
+    const cd=camera.position.distanceTo(b.sp);const far=(b.craft&&cd>260&&!DEEP[b.id])||(b.moon&&cd>Math.max(60,b.dist*4))||(b.ast&&cd>140)||(b.exo&&cd>b.sysR*3+20)||(b.solar&&b.id!=='sun'&&shipOut&&cd>3000)||(b.star&&b.id!=='sun'&&!b.gal&&!(cd<(shipOut?15000:6000)||(b.highlight&&(shipOut||G.tier>=2))))||(b.craft&&compactUI&&cd>40&&!DEEP[b.id])||(b.gal&&b.id!=='g_p9'&&G.tier<2&&cd>20000)||(b.id==='g_p9'&&cd>600)||(b.obs&&G.tier<1);
+    if(far){if(L._v!==0){L.style.display='none';L._v=0;}continue;}
     _v.copy(b.sp).project(camera);const vis=_v.z<1&&_v.z>-1&&Math.abs(_v.x)<1.05&&Math.abs(_v.y)<1.05;
-    const cd=camera.position.distanceTo(b.sp);const shipOut=ship.pos.length()>3000;const far=(b.craft&&cd>260&&!DEEP[b.id])||(b.moon&&cd>Math.max(60,b.dist*4))||(b.ast&&cd>140)||(b.exo&&cd>b.sysR*3+20)||(b.solar&&b.id!=='sun'&&shipOut&&cd>3000)||(b.star&&b.id!=='sun'&&!b.gal&&!(cd<(shipOut?15000:6000)||(b.highlight&&(shipOut||G.tier>=2))))||(b.craft&&compactUI&&cd>40&&!DEEP[b.id])||(b.gal&&b.id!=='g_p9'&&G.tier<2&&cd>20000)||(b.id==='g_p9'&&cd>600)||(b.obs&&G.tier<1);
-    if(!vis||far){b.label.style.display='none';continue;}
-    if(b.gal||b.obs){const px=(_v.x*.5+.5)*W,py=(-_v.y*.5+.5)*H;let clash=false;for(const q of galLbl)if(Math.abs(q[0]-px)<120&&Math.abs(q[1]-py)<18){clash=true;break;}if(clash){b.label.style.display='none';continue;}galLbl.push([px,py]);}
-    b.label.style.display='';b.label.style.transform='translate('+((_v.x*.5+.5)*W).toFixed(1)+'px,'+((-_v.y*.5+.5)*H).toFixed(1)+'px) translate(-50%,-100%)';}
+    if(!vis){if(L._v!==0){L.style.display='none';L._v=0;}continue;}
+    if(b.gal||b.obs){const px=(_v.x*.5+.5)*W,py=(-_v.y*.5+.5)*H;let clash=false;for(const q of galLbl)if(Math.abs(q[0]-px)<120&&Math.abs(q[1]-py)<18){clash=true;break;}if(clash){if(L._v!==0){L.style.display='none';L._v=0;}continue;}galLbl.push([px,py]);}
+    if(L._v!==1){L.style.display='';L._v=1;}L.style.transform='translate('+((_v.x*.5+.5)*W).toFixed(1)+'px,'+((-_v.y*.5+.5)*H).toFixed(1)+'px) translate(-50%,-100%)';}
   _v.copy(t.sp).applyMatrix4(camera.matrixWorldInverse);const behind=_v.z>0;
   const p=_w.copy(t.sp).project(camera),sx=(p.x*.5+.5)*W,sy=(-p.y*.5+.5)*H;const inView=!behind&&sx>30&&sx<W-30&&sy>30&&sy<H-30;
   const tag=$('tag'),arr=$('offarrow'),on=$('offname'),line=$('leaderLine'),dot=$('leaderDot');
@@ -2073,6 +2087,6 @@ function overlay(dt,t){
   cardT+=hd;if(cardT>0.5){cardT=0;if(!$('card').hidden)refreshCard();}
 }
 function loop(){try{step();}catch(err){console.error(err);}requestAnimationFrame(loop);}
-refreshTarget();requestAnimationFrame(loop);
+refreshTarget();freezeStatic();requestAnimationFrame(loop);
 })();
 </script>

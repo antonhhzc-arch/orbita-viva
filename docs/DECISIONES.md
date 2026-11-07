@@ -87,6 +87,7 @@ Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper e
 
 | Versión | Fecha | Cambios |
 |---|---|---|
+| v7.5 | nov 2026 | Guardado validado, borde de la Vía Láctea, optimizaciones de rendimiento |
 | v7.4 | nov 2026 | Cada nave con un trabajo propio y modelos 3D estilo caricatura |
 | v7.3 | nov 2026 | Hangar más visible (inicio y rueda) |
 | v7.2 | nov 2026 | Diseños del dueño: 7 naves + Garaje espacial con 10 vehículos |

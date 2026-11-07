@@ -25,10 +25,29 @@ Herramienta: `python3 tools/stress_test.py` (Playwright + Chromium). Resultados 
 - Etiquetas sobre los objetos (`overlay`, proyecta 1.341 etiquetas cada cuadro): ~30 %.
 - El resto: puntos de interés, órbitas, HUD.
 
-## Propuestas (pendientes de aprobación)
+## Propuestas de la ronda 1
 
 1. Marcar estrellas y objetos de la galaxia como estáticos (no recalcular su posición cada cuadro).
 2. Etiquetas: descartar antes las lejanas y actualizar las de estrellas cada 2–3 cuadros.
 3. Validar el guardado al cargarlo (números dentro de rango, nave existente).
 4. Poner un borde al universo jugable con el módulo de salto (por ejemplo, el borde de la Vía Láctea).
 5. Probar en un Android económico real (Chrome) y medir fps con el contador del navegador.
+
+## Ronda 2 — 6 nov 2026 (v7.5, después de los 4 cambios)
+
+Cambios aplicados:
+1. **Guardado validado al cargar:** números dentro de rango, nave y modo válidos, casco en cero pasa a 60.
+2. **Borde de la Vía Láctea:** con el módulo de salto, el límite es de unos 65.000 años luz desde el Sol (`GAL_LIMIT`), con un mensaje sobre Andrómeda.
+3. **Estrellas y objetos quietos de la galaxia marcados como fijos** (`freezeStatic`): su posición se calcula una sola vez; los halos solo se orientan si la estrella está visible.
+4. **Etiquetas más baratas:** primero se descartan por distancia (sin proyectar) y el DOM solo se toca cuando cambia la visibilidad.
+
+| Medición | Ronda 1 | Ronda 2 |
+|---|---|---|
+| Lógica por cuadro, escritorio (5 lugares) | 3,6–4,6 ms | 2,4–3,3 ms |
+| Lógica por cuadro, CPU ×4 (lejos de la Tierra) | 12,4–13,2 ms | 8,4–11,6 ms |
+| Lógica por cuadro, CPU ×4 (junto a la Tierra) | 16,2 ms | 15,4–17,2 ms (la zona más cargada) |
+| Peso del juego en el perfil (junto a la Tierra) | 4,4 % del tiempo | 2,3 % del tiempo |
+| Guardados dañados | 2 casos con error en cada cuadro | 0 errores |
+| Volar sin límite | llegó a 6.000 millones de unidades | se detiene en el borde (11,6 millones) |
+
+Pendiente: la zona de la Tierra sigue siendo la más pesada en CPU lenta (muchos objetos, lunas, naves, puntos de interés y basura espacial a la vez). Siguiente ronda: medir en un Android económico real.

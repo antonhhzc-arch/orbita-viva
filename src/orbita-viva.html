@@ -72,6 +72,8 @@ button.chip{display:flex;align-items:center;gap:8px;min-height:32px}
 .thrust{position:fixed;right:var(--sr);bottom:var(--sb);display:flex;flex-direction:column;align-items:center;gap:8px}
 .speed{text-align:center;font-family:var(--f-data);font-size:13px;line-height:1.2;text-shadow:0 1px 4px #000}
 .speed small{display:block;font-size:10px;color:var(--dim)}
+.speed.alt{margin-top:2px;max-width:110px;color:#cfe6ff}
+.speed.alt small{white-space:normal}
 #slider{position:relative;width:40px;height:min(200px,44vh);border-radius:20px;background:rgba(238,242,250,.08);border:1px solid rgba(238,242,250,.3);touch-action:none;cursor:ns-resize;overflow:hidden}
 #slider .fill{position:absolute;left:0;right:0;bottom:0;background:rgba(255,177,61,.35)}
 #slider .turbo{position:absolute;left:0;right:0;top:0;height:14%;background:rgba(255,177,61,.12);border-bottom:1px dashed rgba(255,177,61,.6);display:flex;align-items:center;justify-content:center;font-size:7.5px;letter-spacing:.12em;color:var(--accent)}
@@ -350,6 +352,7 @@ body.compact .hthumb{height:84px}
 </button>
 <div class="thrust hud-el">
   <div class="speed" id="spd">0<small>km/s</small></div>
+  <div class="speed alt" id="alt" hidden></div>
   <div id="slider" role="slider" aria-label="Empuje" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
     <div class="fill" id="sFill"></div>
     <div class="turbo">TURBO</div>
@@ -702,6 +705,7 @@ function bvRGB(bv){const T=4600*(1/(0.92*bv+1.7)+1/(0.92*bv+0.62));const P=[[300
 
 const bodies=[],B={},billboards=[];
 function addBody(o){o.au={x:0,y:0,z:0};o.sp=new THREE.Vector3();o.prev=new THREE.Vector3();bodies.push(o);B[o.id]=o;return o;}
+const ATMS=[];
 function halo(parent,r1,r2,color,op){const m=new THREE.Mesh(new THREE.RingGeometry(r1,r2,96),new THREE.MeshBasicMaterial({color,transparent:true,opacity:op,depthWrite:false,side:THREE.DoubleSide}));parent.add(m);billboards.push(m);return m;}
 
 const sunObj=new THREE.Object3D();scene.add(sunObj);
@@ -724,7 +728,7 @@ const PL=[
 for(const [id,name,kind,R,pole,rot,col,atm,facts] of PL){
   const mesh=new THREE.Mesh(new THREE.SphereGeometry(R,56,36),new THREE.MeshToonMaterial({map:id==='earth'?makeEarthTex():makeTex(TEX[id]),gradientMap:gradMap}));
   const holder=new THREE.Object3D();holder.add(mesh);scene.add(holder);
-  if(atm)halo(holder,R*1.035,R*1.1,atm,id==='earth'?.5:.3);
+  if(atm){const am=halo(holder,R,R*1.045,atm,id==='earth'?.45:.28);billboards.splice(billboards.indexOf(am),1);ATMS.push({m:am,holder,R});}
   addBody({id,name,kind,R,obj:holder,spin:mesh,pole:poleScene(pole[0],pole[1]),rot,facts,col,helio:true});
 }
 (function rings(){const R=4.4,inner=R*1.24,outer=R*2.27,w=256,c=document.createElement('canvas');c.width=w;c.height=2;const g=c.getContext('2d');
@@ -1673,14 +1677,14 @@ function pulse(){
 
 /* Space debris around Earth */
 const DEB_N=220,debMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0xc4cbe0}),DEB_N);debMesh.frustumCulled=false;scene.add(debMesh);
-const deb=[];for(let i=0;i<DEB_N;i++){const r=1.42+Math.pow(Math.random(),1.6)*1.1;deb.push({r,inc:(Math.random()-.5)*2.4,node:Math.random()*6.28,ph:Math.random()*6.28,w:1.6/Math.pow(r,1.5),s:.012+Math.random()*.025,p:new THREE.Vector3()});}
+const deb=[];for(let i=0;i<DEB_N;i++){const r=1.42+Math.pow(Math.random(),1.6)*1.1;deb.push({r,inc:(Math.random()-.5)*2.4,node:Math.random()*6.28,ph:Math.random()*6.28,w:1.6/Math.pow(r,1.5),s:.003+Math.random()*.007,p:new THREE.Vector3()});}
 let debT=0;const _dm=new THREE.Matrix4(),_dq=new THREE.Quaternion(),_ds=new THREE.Vector3();
 function updateDebris(dt){const E=B.earth,near=camera.position.distanceTo(E.sp)<40;debMesh.visible=near;if(!near)return;debT+=dt;
   for(let i=0;i<DEB_N;i++){const d=deb[i],a=d.ph+debT*d.w;d.p.set(Math.cos(a)*d.r,0,Math.sin(a)*d.r).applyAxisAngle(AX.x,d.inc).applyAxisAngle(AX.y,d.node).add(E.sp);
     _dq.setFromEuler(new THREE.Euler(a*3,i,a*2));_ds.setScalar(d.s);_dm.compose(d.p,_dq,_ds);debMesh.setMatrixAt(i,_dm);}
   debMesh.instanceMatrix.needsUpdate=true;
   if(ship.pos.distanceTo(E.sp)<4.2){teachOnce('debris','Basura espacial: miles de restos de satélites y cohetes giran alrededor de la Tierra. A esa velocidad, hasta un fragmento pequeño puede dañar una nave.');
-    for(const d of deb){if(d.p.distanceTo(ship.pos)<d.s+0.03){hurt(6,'¡Te golpeó basura espacial!');break;}}}}
+    for(const d of deb){if(d.p.distanceTo(ship.pos)<d.s+0.012*shipK){hurt(6,'¡Te golpeó basura espacial!');break;}}}}
 
 /* Damage, shadow, storms */
 let hurtT=0;
@@ -1971,6 +1975,16 @@ function drawGal(g,w,h){const NEAR=2400,GC=26700,side=w>=h*1.25,IR=side?Math.max
 const sr0=()=>ship.pos.length();
 const clock=new THREE.Clock(),_m=new THREE.Matrix4(),_qa=new THREE.Quaternion(),AX={x:new THREE.Vector3(1,0,0),y:new THREE.Vector3(0,1,0),z:new THREE.Vector3(0,0,1)};
 let beltTick=0,hitT=0;updateBelt(simMs);
+let shipK=1;const SHIP_KMIN=0.07;
+/* Space dust: tiny specks drifting past the ship to feel speed and scale */
+const DUST_N=240,dustU=new Float32Array(DUST_N*3),dustP=new Float32Array(DUST_N*3);for(let i=0;i<DUST_N*3;i++)dustU[i]=Math.random()-.5;
+const dustGeo=new THREE.BufferGeometry();dustGeo.setAttribute('position',new THREE.BufferAttribute(dustP,3));
+const dustMat=new THREE.PointsMaterial({color:0xd8e2f5,size:1.7,sizeAttenuation:false,transparent:true,opacity:0,depthWrite:false});
+const dust=new THREE.Points(dustGeo,dustMat);dust.frustumCulled=false;scene.add(dust);const dustPrev=new THREE.Vector3();let dustInit=false;
+function dustStep(dt){const S=1.4*shipK;if(!dustInit){dustPrev.copy(ship.pos);dustInit=true;}
+  const dx=(ship.pos.x-dustPrev.x)/S,dy=(ship.pos.y-dustPrev.y)/S,dz=(ship.pos.z-dustPrev.z)/S,mv=Math.hypot(dx,dy,dz),cap=mv>0.06?0.06/mv:1;dustPrev.copy(ship.pos);
+  for(let i=0;i<DUST_N;i++){let u=dustU[i*3]-dx*cap,v=dustU[i*3+1]-dy*cap,w=dustU[i*3+2]-dz*cap;u-=Math.round(u);v-=Math.round(v);w-=Math.round(w);dustU[i*3]=u;dustU[i*3+1]=v;dustU[i*3+2]=w;dustP[i*3]=u*S;dustP[i*3+1]=v*S;dustP[i*3+2]=w*S;}
+  dustGeo.attributes.position.needsUpdate=true;dust.position.copy(ship.pos);const a=clamp(mv/Math.max(dt,1e-3)*0.35,0,0.6);dustMat.opacity+=(a-dustMat.opacity)*Math.min(1,dt*4);}
 const camOff=new THREE.Vector3(0,.12,.42),camTilt=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-0.16);let hudT=0,cardT=0;
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.fov=w>h?55:70;camera.updateProjectionMatrix();checkRotate();}
 addEventListener('resize',resize);resize();
@@ -2013,15 +2027,18 @@ function step(){
   ship.quat.normalize();
   ship.pos.addScaledVector(_v.set(0,0,-1).applyQuaternion(ship.quat),ship.speed*dt);
   if(near&&dNear<near.R*4+1.2)ship.pos.add(_v.copy(near.sp).sub(near.prev));
-  for(const b of bodies){if(b.craft||b.hidden||b.soft||b.obs||b.bh)continue;const off=_v.copy(ship.pos).sub(b.sp),l=off.length(),min=b.R*1.03+0.015;if(l<min){ship.pos.copy(b.sp).addScaledVector(off.normalize(),min);ship.speed*=0.3;}}
+  for(const b of bodies){if(b.craft||b.hidden||b.soft||b.obs||b.bh)continue;const off=_v.copy(ship.pos).sub(b.sp),l=off.length(),min=b.R*1.004+0.012*shipK;if(l<min){ship.pos.copy(b.sp).addScaledVector(off.normalize(),min);ship.speed*=0.3;}}
   const sr=ship.pos.length();
   if(sr>84&&sr<122&&Math.abs(ship.pos.y)<22){for(let k=0;k<BELT_N;k++){const dx=ship.pos.x-belt.sp[k*3],dy=ship.pos.y-belt.sp[k*3+1],dz=ship.pos.z-belt.sp[k*3+2],rr=belt.s[k]+0.035;
       if(dx*dx+dy*dy+dz*dz<rr*rr){const l=Math.sqrt(dx*dx+dy*dy+dz*dz)||1;ship.pos.set(belt.sp[k*3]+dx/l*rr*1.05,belt.sp[k*3+1]+dy/l*rr*1.05,belt.sp[k*3+2]+dz/l*rr*1.05);
         if(performance.now()-hitT>800){hitT=performance.now();ship.speed=-Math.abs(ship.speed)*0.3;ship.throttle=Math.min(ship.throttle,0.2);const h=$('hit');h.classList.add('on');setTimeout(()=>h.classList.remove('on'),60);hurt(12,'¡Chocaste con un asteroide!');}break;}}}
+  {const kT=near?clamp(dNear/(near.R*1.6+0.05),SHIP_KMIN,1):1;shipK+=(kT-shipK)*(1-Math.exp(-dt*2.5));shipObj.scale.setScalar(shipK);
+   const nn=Math.max(0.0003,0.004*shipK);if(Math.abs(camera.near-nn)>nn*0.05){camera.near=nn;camera.updateProjectionMatrix();}}
   shipObj.position.copy(ship.pos);shipObj.quaternion.copy(ship.quat);
   {const FL=shipObj.userData.flames||[],tt=performance.now()/1000,th=Math.max(0,ship.throttle);for(let i=0;i<FL.length;i++){const k=(0.16+th*1.1)*(turbo?1.7:1)*(1+0.2*Math.sin(tt*37+i*1.9)),w=0.7+th*0.4+0.06*Math.sin(tt*23+i);FL[i].scale.set(w,w,k);}}
   camQ.slerp(ship.quat,1-Math.exp(-dt*7));
-  camera.position.copy(ship.pos).add(_v.copy(camOff).applyQuaternion(camQ));camera.quaternion.copy(camQ).multiply(camTilt);if(shakeAmt)camera.position.add(_v.set((Math.random()-.5)*shakeAmt,(Math.random()-.5)*shakeAmt,0).applyQuaternion(camQ));camera.updateMatrixWorld();obsStep();animGalaxy(dt);
+  camera.position.copy(ship.pos).add(_v.copy(camOff).multiplyScalar(shipK).applyQuaternion(camQ));camera.quaternion.copy(camQ).multiply(camTilt);if(shakeAmt)camera.position.add(_v.set((Math.random()-.5)*shakeAmt*shipK,(Math.random()-.5)*shakeAmt*shipK,0).applyQuaternion(camQ));camera.updateMatrixWorld();dustStep(dt);
+  for(const A of ATMS){const d=camera.position.distanceTo(A.holder.position),f=d>A.R*1.0005?Math.min(12,d/Math.sqrt(d*d-A.R*A.R)):12;A.m.scale.setScalar(f);A.m.lookAt(camera.position);}obsStep();animGalaxy(dt);
   window.__stars.position.copy(camera.position);updateGlows();
   for(const m of billboards){if(m.matrixAutoUpdate){m.quaternion.copy(camera.quaternion);continue;}if(m.parent&&!m.parent.visible)continue;m.quaternion.copy(camera.quaternion);m.updateMatrix();}
   if(scanning){const sb=B[scanning.id];if(sb!==target()||!inScan(sb)){scanning=null;toast('Escaneo interrumpido');}
@@ -2061,6 +2078,10 @@ function overlay(dt,t){
   const R=Math.max(ship.pos.length(),1e-3);let kmPerU=(1/PW)*Math.pow(R/SC,1/PW-1)/SC*AU_KM;
   let nb=null,nd=Infinity;for(const b of bodies){if(!REAL_R[b.id]||b.obs)continue;const d=surfDist(b);if(d<nd){nd=d;nb=b;}}
   if(nb){const local=REAL_R[nb.id]/nb.R,x=clamp(nd/(nb.R*14),0,1),w=x*x*(3-2*x);kmPerU=local+(kmPerU-local)*w;}
+  {const el=$('alt');if(nb&&!nb.craft&&nd<nb.R*3){const km=Math.max(0,nd*REAL_R[nb.id]/nb.R);let cmp='';
+    if(nb.id==='earth'){if(km<100)cmp='bajo la línea de Kármán: aún no es el espacio';else if(km<600)cmp='altura de la Estación Espacial';else if(km>33000&&km<39000)cmp='órbita de los satélites geoestacionarios';}
+    else if(nb.id==='moon'&&km<120)cmp='órbita de las naves Apolo (unos 110 km)';
+    el.innerHTML=(km<10?nf1:nf0).format(km)+' km<small>sobre '+nb.name+(cmp?' · '+cmp:'')+'</small>';el.hidden=false;}else el.hidden=true;}
   lastKms+=(Math.abs(ship.speed)*kmPerU-lastKms)*0.5;
   const xc=lastKms/C_KMS;$('spd').innerHTML=xc>=5000?nf2.format(lastKms/9.4607e12)+'<small>años luz/s</small>':xc>=0.1?(xc<100?nf1:nf0).format(xc)+'<small>× luz</small>':nf0.format(lastKms)+'<small>km/s</small>';
   if(xc>1.2&&!cFlag){cFlag=true;toast('Superaste la velocidad de la luz. En la realidad nada puede hacerlo: aquí el espacio está comprimido para que puedas explorar.',6000);}

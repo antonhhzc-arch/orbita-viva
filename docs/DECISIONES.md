@@ -69,6 +69,15 @@ Estilo caricatura: sombreado de 3 tonos horneado en colores de vértice, contorn
 
 Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper el juego ni la confianza de padres y escuelas.
 
+## Escala (v7.6, nov 2026)
+
+- **Escala dinámica:** la nave y la cámara se encogen juntas al acercarse a un objeto (`shipK`, de 1 a 0,07 según la distancia a la superficie respecto al radio). La nave mantiene su tamaño en pantalla, pero el planeta se siente enorme. Cerca de la Tierra la nave equivale a decenas de km en vez de 500 km.
+- **Polvo espacial** alrededor de la nave para sentir velocidad y escala (`dustStep`).
+- **Atmósfera delgada** que abraza el borde del planeta desde cualquier distancia (`ATMS`).
+- **Basura espacial más pequeña.**
+- **Indicador de altura** bajo la velocidad, con comparaciones reales (Estación Espacial, línea de Kármán, órbita geoestacionaria, Apolo en la Luna).
+- Pendiente: texturas con más detalle al acercarse (parte 3) y datos de escala real en las fichas (parte 4).
+
 ## Contenido
 
 - Vecindario de 50 años luz (1.052 estrellas, 234 exoplanetas, 61 enanas blancas).
@@ -87,6 +96,7 @@ Recomendación: lo de pago debe ser distinto, no más poderoso, para no romper e
 
 | Versión | Fecha | Cambios |
 |---|---|---|
+| v7.6 | nov 2026 | Escala dinámica, polvo espacial, atmósfera delgada, indicador de altura |
 | v7.5 | nov 2026 | Guardado validado, borde de la Vía Láctea, optimizaciones de rendimiento |
 | v7.4 | nov 2026 | Cada nave con un trabajo propio y modelos 3D estilo caricatura |
 | v7.3 | nov 2026 | Hangar más visible (inicio y rueda) |
